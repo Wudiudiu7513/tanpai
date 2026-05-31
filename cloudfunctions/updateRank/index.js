@@ -4,6 +4,18 @@ cloud.init({ env: cloud.DYNAMIC_CURRENT_ENV })
 
 const db = cloud.database()
 
+async function ensureCollection(name) {
+  if (typeof db.createCollection !== 'function') return
+  try {
+    await db.createCollection(name)
+  } catch (err) {
+    const message = err && (err.errMsg || err.message || '')
+    if (!message.includes('already exists') && !message.includes('collection exists')) {
+      console.warn(`ensure collection ${name} failed:`, err)
+    }
+  }
+}
+
 function normalizeUserInfo(userInfo = {}) {
   return {
     nickName: userInfo.nickName || userInfo.name || '微信用户',
@@ -20,6 +32,9 @@ exports.main = async (event) => {
   if (!OPENID) {
     return { success: false, msg: '未获取到 openid' }
   }
+
+  await ensureCollection('userData')
+  await ensureCollection('rankList')
 
   const userDoc = {
     openid: OPENID,
