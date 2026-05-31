@@ -1,4 +1,5 @@
 const app = getApp()
+const { getNetCarbon } = require('../../utils/carbon')
 
 Page({
   data: {
@@ -24,7 +25,7 @@ Page({
 
   loadRankData() {
     const records = wx.getStorageSync('carbon_records') || []
-    const myTotal = records.reduce((sum, item) => sum + Number(item.carbon || 0), 0)
+    const myTotal = getNetCarbon(records)
     this.setData({ myCarbon: myTotal.toFixed(2) })
 
     app.syncUserData({ carbonData: myTotal })

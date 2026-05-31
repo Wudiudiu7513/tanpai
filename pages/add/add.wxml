@@ -1,37 +1,40 @@
 <view class="container">
   <view class="card">
-    <text class="title">记录本次碳排</text>
+    <text class="title">记录低碳生活</text>
 
     <view class="cate-group">
       <text class="label">选择分类</text>
       <view class="cate-list">
-        <view class="cate-item {{cate === 'transport' ? 'active' : ''}}" bindtap="setCate" data-cate="transport">
-          <text class="icon">🚗</text>
-          <text>交通</text>
-        </view>
-        <view class="cate-item {{cate === 'food' ? 'active' : ''}}" bindtap="setCate" data-cate="food">
-          <text class="icon">🍽️</text>
-          <text>饮食</text>
-        </view>
-        <view class="cate-item {{cate === 'electric' ? 'active' : ''}}" bindtap="setCate" data-cate="electric">
-          <text class="icon">💡</text>
-          <text>用电</text>
+        <view class="cate-item {{cate === item.id ? 'active' : ''}}" wx:for="{{categories}}" wx:key="id" bindtap="setCate" data-cate="{{item.id}}">
+          <text class="icon">{{item.icon}}</text>
+          <text>{{item.name}}</text>
         </view>
       </view>
     </view>
 
-    <view class="input-group">
+    <view class="input-group" wx:if="{{currentCategory.kind !== 'saving'}}">
       <text class="label">碳排放量 (kg CO₂)</text>
       <input class="input" type="digit" placeholder="请输入估算值" value="{{carbon}}" bindinput="setCarbon" />
-      <text class="tip">可直接填写估算值，也可使用下方快捷项。</text>
+      <text class="tip">外卖、购物、居家等分类可先用估算值记录，后续可接入截图识别。</text>
+    </view>
+
+    <view class="input-group" wx:else>
+      <text class="label">减排量 (kg CO₂)</text>
+      <input class="input" type="digit" placeholder="请输入本次低碳行为减排量" value="{{savedCarbon}}" bindinput="setSavedCarbon" />
+      <text class="tip">步行、骑行、自带杯、旧物回收等行为会计入累计减排。</text>
+    </view>
+
+    <view class="input-group">
+      <text class="label">备注</text>
+      <input class="input" placeholder="例如：午餐外卖、快递包裹、骑行通勤" value="{{remark}}" bindinput="setRemark" />
     </view>
 
     <view class="quick-group">
-      <text class="label">快捷填写</text>
+      <text class="label">快捷估算</text>
       <view class="quick-list">
-        <view class="quick-item" bindtap="quick" data-val="2">开车 10km ≈ 2kg</view>
-        <view class="quick-item" bindtap="quick" data-val="1">用电 5 小时 ≈ 1kg</view>
-        <view class="quick-item" bindtap="quick" data-val="3">高碳餐食 ≈ 3kg</view>
+        <view class="quick-item" wx:for="{{quickItems}}" wx:key="label" bindtap="quick" data-index="{{index}}">
+          {{item.label}} ≈ {{item.carbon || item.savedCarbon}}kg
+        </view>
       </view>
     </view>
 

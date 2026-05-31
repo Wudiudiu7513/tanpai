@@ -15,18 +15,28 @@
         <text class="overview-label">总排放 (kg)</text>
       </view>
       <view class="overview-item">
-        <text class="overview-num">{{avgCarbon}}</text>
-        <text class="overview-label">日均 (kg)</text>
+        <text class="overview-num saved">{{savedCarbon}}</text>
+        <text class="overview-label">累计减排 (kg)</text>
       </view>
       <view class="overview-item">
-        <text class="overview-num">{{recordDays}}</text>
+        <text class="overview-num">{{netCarbon}}</text>
+        <text class="overview-label">净排放 (kg)</text>
+      </view>
+    </view>
+    <view class="overview-row sub-row">
+      <view class="overview-item">
+        <text class="overview-num small">{{avgCarbon}}</text>
+        <text class="overview-label">净日均 (kg)</text>
+      </view>
+      <view class="overview-item">
+        <text class="overview-num small">{{recordDays}}</text>
         <text class="overview-label">记录天数</text>
       </view>
     </view>
   </view>
 
   <view class="card equal-card">
-    <text class="title">碳排等价</text>
+    <text class="title">净排放等价</text>
     <view class="equal-list">
       <view class="equal-item">
         <text class="equal-icon">🌳</text>
@@ -44,7 +54,7 @@
   </view>
 
   <view class="card">
-    <text class="title">碳排趋势</text>
+    <text class="title">净排放趋势</text>
     <view class="chart-area">
       <view class="chart-bars">
         <view class="chart-col" wx:for="{{chartData}}" wx:key="date">
@@ -59,22 +69,14 @@
   </view>
 
   <view class="card">
-    <text class="title">分类占比</text>
+    <text class="title">分类统计</text>
     <view class="category-bars">
-      <view class="cate-row">
-        <text class="cate-label">🚗 交通</text>
-        <view class="cate-bar-bg"><view class="cate-bar" style="width:{{transportPercent}}%;background:#3498db;"></view></view>
-        <text class="cate-percent">{{transportPercent}}%</text>
-      </view>
-      <view class="cate-row">
-        <text class="cate-label">🍽️ 饮食</text>
-        <view class="cate-bar-bg"><view class="cate-bar" style="width:{{foodPercent}}%;background:#e67e22;"></view></view>
-        <text class="cate-percent">{{foodPercent}}%</text>
-      </view>
-      <view class="cate-row">
-        <text class="cate-label">💡 用电</text>
-        <view class="cate-bar-bg"><view class="cate-bar" style="width:{{electricPercent}}%;background:#f1c40f;"></view></view>
-        <text class="cate-percent">{{electricPercent}}%</text>
+      <view class="cate-row" wx:for="{{categoryStats}}" wx:key="id">
+        <text class="cate-label">{{item.icon}} {{item.name}}</text>
+        <view class="cate-bar-bg">
+          <view class="cate-bar" style="width:{{item.barWidth}}%;background:{{item.color}};"></view>
+        </view>
+        <text class="cate-percent">{{item.value}}</text>
       </view>
     </view>
   </view>

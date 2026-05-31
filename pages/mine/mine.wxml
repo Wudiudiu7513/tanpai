@@ -44,6 +44,21 @@
     </view>
   </view>
 
+  <view class="card werun-card">
+    <text class="title">微信运动自动同步</text>
+    <view class="werun-row">
+      <view class="werun-stat">
+        <text class="werun-num">{{syncedStepDays}}</text>
+        <text class="werun-label">已同步天数</text>
+      </view>
+      <view class="werun-stat">
+        <text class="werun-num">{{syncedSteps}}</text>
+        <text class="werun-label">累计步数</text>
+      </view>
+    </view>
+    <button class="sync-btn" bindtap="syncWeRun">同步微信运动</button>
+  </view>
+
   <view class="card tree-card">
     <text class="title">我的低碳树</text>
     <view class="tree-area">

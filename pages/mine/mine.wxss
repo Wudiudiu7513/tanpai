@@ -92,6 +92,39 @@
   color: #999;
   margin-top: 6rpx;
 }
+.werun-card {
+  background: linear-gradient(135deg, #eefaf4, #f7fffb);
+}
+.werun-row {
+  display: flex;
+  gap: 20rpx;
+  margin-bottom: 22rpx;
+}
+.werun-stat {
+  flex: 1;
+  padding: 22rpx;
+  background: rgba(255,255,255,0.72);
+  border-radius: 16rpx;
+  text-align: center;
+}
+.werun-num {
+  display: block;
+  font-size: 34rpx;
+  font-weight: bold;
+  color: #16a085;
+}
+.werun-label {
+  display: block;
+  font-size: 22rpx;
+  color: #7f8c8d;
+  margin-top: 6rpx;
+}
+.sync-btn {
+  background: #2ecc71;
+  color: #fff;
+  border-radius: 14rpx;
+  font-size: 28rpx;
+}
 .tree-card {
   text-align: center;
   background: linear-gradient(135deg, #f0fdf4, #dcfce7);

@@ -17,6 +17,7 @@
 - 减排建议：根据主要碳排来源生成低碳建议。
 - 低碳排行：通过云数据库 `rankList` 展示用户排行。
 - 我的页面：微信登录、昵称头像、等级进度、低碳树、徽章、打卡日历、每日目标、本地数据导出。
+- 微信运动同步：用户授权后同步最近步数，自动估算步行减排并合并到碳排数据。
 
 ## 微信登录说明
 
@@ -28,6 +29,29 @@
   - 昵称：`input type="nickname"`
 
 这样可以避免旧接口 `wx.getUserProfile` 在开发者工具或真机中直接失败，并显示“已取消授权”的问题。
+
+## 智能记录说明
+
+当前记录类型已扩展为：
+
+- 交通
+- 饮食
+- 外卖
+- 用电
+- 购物
+- 居家
+- 低碳行为
+
+普通消费类记录使用 `carbon` 表示排放量；步行、骑行、自带杯、旧物回收等低碳行为使用 `savedCarbon` 表示减排量。统计页会展示：
+
+- 总排放
+- 累计减排
+- 净排放
+- 分类统计
+
+微信运动同步入口在“我的”页面。用户授权后，小程序会通过 `wx.getWeRunData` 获取微信运动数据，并调用 `syncWeRun` 云函数解析最近步数，自动生成 `lowcarbon` 类型记录。
+
+外卖暂不支持自动读取美团/饿了么订单，因为微信小程序没有权限直接读取其他 App 数据。目前已提供“外卖”分类和快捷估算项，后续可以继续接入“订单截图 OCR 识别”。
 
 ## 云开发配置
 
@@ -43,16 +67,19 @@ module.exports = {
 
 - `cloudfunctions/login`
 - `cloudfunctions/updateRank`
+- `cloudfunctions/syncWeRun`
 
 云函数部署状态：
 
 - `login` 已成功部署。
 - `updateRank` 已成功部署。
+- `syncWeRun` 需要新增部署。
 
 云数据库集合：
 
 - `userData`
 - `rankList`
+- `weRunSyncLog`
 
 `updateRank` 云函数中包含集合初始化兜底逻辑，运行时会尝试确保以上集合存在。
 
@@ -96,6 +123,16 @@ git push
 "D:\学习\微信web开发者工具0\微信web开发者工具\cli.bat" cloud functions deploy ^
   --env cloud1-3gsmum3l9da9566a ^
   --paths "C:\Users\33718\Desktop\碳排\cloudfunctions\login" "C:\Users\33718\Desktop\碳排\cloudfunctions\updateRank" ^
+  --remote-npm-install ^
+  --appid wx4cfcf3ee52983c32
+```
+
+新增微信运动云函数时也可以单独部署：
+
+```bash
+"D:\学习\微信web开发者工具0\微信web开发者工具\cli.bat" cloud functions deploy ^
+  --env cloud1-3gsmum3l9da9566a ^
+  --paths "C:\Users\33718\Desktop\碳排\cloudfunctions\syncWeRun" ^
   --remote-npm-install ^
   --appid wx4cfcf3ee52983c32
 ```

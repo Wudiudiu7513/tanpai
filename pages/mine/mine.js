@@ -1,4 +1,5 @@
 const app = getApp()
+const { getNetCarbon } = require('../../utils/carbon')
 
 Page({
   data: {
@@ -17,6 +18,8 @@ Page({
     treeLevel: 'Lv.1',
     savedCarbon: '0.00',
     dailyGoal: 8,
+    syncedStepDays: 0,
+    syncedSteps: 0,
     badges: [],
     calendarYear: 2026,
     calendarMonth: 4,
@@ -76,6 +79,59 @@ Page({
       })
   },
 
+  syncWeRun() {
+    if (!wx.getWeRunData) {
+      wx.showToast({ title: '当前基础库不支持微信运动', icon: 'none' })
+      return
+    }
+    wx.showLoading({ title: '同步步数...' })
+    wx.getWeRunData({
+      success: (res) => {
+        wx.cloud.callFunction({
+          name: 'syncWeRun',
+          data: {
+            weRunData: wx.cloud.CloudID(res.cloudID)
+          }
+        }).then(({ result }) => {
+          if (!result || !result.success) {
+            throw new Error(result && result.msg ? result.msg : 'sync-failed')
+          }
+          const merged = this.mergeWeRunRecords(result.records || [])
+          wx.hideLoading()
+          this.onShow()
+          wx.showToast({ title: `同步${merged}天步数`, icon: 'none' })
+        }).catch((err) => {
+          wx.hideLoading()
+          console.error('同步微信运动失败：', err)
+          wx.showToast({ title: '同步失败，请检查授权和云函数', icon: 'none' })
+        })
+      },
+      fail: (err) => {
+        wx.hideLoading()
+        console.error('获取微信运动失败：', err)
+        wx.showToast({ title: '请先授权微信运动', icon: 'none' })
+      }
+    })
+  },
+
+  mergeWeRunRecords(stepRecords) {
+    const records = wx.getStorageSync('carbon_records') || []
+    const manualRecords = records.filter(item => !(item.source === 'werun' && item.id))
+    const existingMap = {}
+    manualRecords.forEach(item => {
+      existingMap[item.id || `${item.source}_${item.date}_${item.category}`] = item
+    })
+    stepRecords.forEach(item => {
+      existingMap[item.id] = item
+    })
+    const nextRecords = Object.keys(existingMap)
+      .map(key => existingMap[key])
+      .sort((a, b) => Number(b.timestamp || 0) - Number(a.timestamp || 0))
+    wx.setStorageSync('carbon_records', nextRecords)
+    app.syncUserData({ carbonData: getNetCarbon(nextRecords) })
+    return stepRecords.length
+  },
+
   onNameInput(e) {
     this.setData({ userName: e.detail.value })
   },
@@ -100,6 +156,9 @@ Page({
     const records = wx.getStorageSync('carbon_records') || []
     const daySet = new Set(records.map(item => item.date))
     const totalCarbon = records.reduce((sum, item) => sum + Number(item.carbon || 0), 0)
+    const totalSaved = records.reduce((sum, item) => sum + Number(item.savedCarbon || 0), 0)
+    const weRunRecords = records.filter(item => item.source === 'werun')
+    const syncedSteps = weRunRecords.reduce((sum, item) => sum + Number(item.steps || 0), 0)
     const streakDays = this.calcStreak(daySet)
     const levelInfo = this.calcLevel(totalCarbon)
     const treeInfo = this.calcTree(totalCarbon)
@@ -108,9 +167,11 @@ Page({
     this.setData({
       totalRecords: records.length,
       totalDays: daySet.size,
-      totalCarbon: totalCarbon.toFixed(2),
+      totalCarbon: Math.max(0, totalCarbon - totalSaved).toFixed(2),
       streakDays,
       savedCarbon: saved.toFixed(2),
+      syncedStepDays: weRunRecords.length,
+      syncedSteps,
       ...levelInfo,
       ...treeInfo
     })

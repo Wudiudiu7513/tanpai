@@ -1,16 +1,18 @@
+const { CATEGORIES, sumRecords, getCategory } = require('../../utils/carbon')
+
 Page({
   data: {
     timeRange: 'week',
     totalCarbon: '0.00',
+    savedCarbon: '0.00',
+    netCarbon: '0.00',
     avgCarbon: '0.00',
     recordDays: 0,
     treeAbsorb: 0,
     lightHours: 0,
     drivingKm: 0,
-    transportPercent: 0,
-    foodPercent: 0,
-    electricPercent: 0,
     chartData: [],
+    categoryStats: [],
     adviceList: []
   },
 
@@ -32,31 +34,24 @@ Page({
     if (this.data.timeRange === 'quarter') startDate.setMonth(now.getMonth() - 3)
 
     const filtered = records.filter(item => new Date(item.timestamp) >= startDate)
-    const totals = { transport: 0, food: 0, electric: 0 }
-    filtered.forEach(item => {
-      if (totals[item.category] !== undefined) totals[item.category] += Number(item.carbon || 0)
-    })
-
-    const total = totals.transport + totals.food + totals.electric
+    const totals = sumRecords(filtered)
+    const netCarbon = Math.max(0, totals.emission - totals.saving)
     const daySet = new Set(filtered.map(item => item.date))
     const recordDays = daySet.size
     const daysForAverage = recordDays || 1
-    const transportPercent = total ? Math.round(totals.transport / total * 100) : 0
-    const foodPercent = total ? Math.round(totals.food / total * 100) : 0
-    const electricPercent = total ? 100 - transportPercent - foodPercent : 0
 
     this.setData({
-      totalCarbon: total.toFixed(2),
-      avgCarbon: (total / daysForAverage).toFixed(2),
+      totalCarbon: totals.emission.toFixed(2),
+      savedCarbon: totals.saving.toFixed(2),
+      netCarbon: netCarbon.toFixed(2),
+      avgCarbon: (netCarbon / daysForAverage).toFixed(2),
       recordDays,
-      treeAbsorb: Math.ceil(total / 0.06),
-      lightHours: Math.round(total / 0.05),
-      drivingKm: Math.round(total / 0.21),
-      transportPercent,
-      foodPercent,
-      electricPercent,
+      treeAbsorb: Math.ceil(netCarbon / 0.06),
+      lightHours: Math.round(netCarbon / 0.05),
+      drivingKm: Math.round(netCarbon / 0.21),
       chartData: this.generateChartData(filtered),
-      adviceList: this.generateAdvice(totals, total, daysForAverage)
+      categoryStats: this.generateCategoryStats(filtered, totals.emission),
+      adviceList: this.generateAdvice(filtered, totals, daysForAverage)
     })
   },
 
@@ -73,7 +68,9 @@ Page({
     }
 
     records.forEach(item => {
-      if (dayMap[item.date] !== undefined) dayMap[item.date] += Number(item.carbon || 0)
+      if (dayMap[item.date] !== undefined) {
+        dayMap[item.date] += Math.max(0, Number(item.carbon || 0) - Number(item.savedCarbon || 0))
+      }
     })
 
     const maxVal = Math.max(1, ...Object.keys(dayMap).map(key => dayMap[key]))
@@ -92,18 +89,45 @@ Page({
     })
   },
 
-  generateAdvice(totals, total, daysForAverage) {
-    if (total === 0) return ['还没有记录数据，去记录一次碳足迹吧。']
+  generateCategoryStats(records, totalEmission) {
+    return CATEGORIES.map(category => {
+      const emission = records
+        .filter(item => item.category === category.id)
+        .reduce((sum, item) => sum + Number(item.carbon || 0), 0)
+      const saving = records
+        .filter(item => item.category === category.id)
+        .reduce((sum, item) => sum + Number(item.savedCarbon || 0), 0)
+      const value = category.kind === 'saving' ? saving : emission
+      const percent = totalEmission && category.kind !== 'saving' ? Math.round(emission / totalEmission * 100) : 0
+      return {
+        ...category,
+        value: value.toFixed(2),
+        percent,
+        barWidth: category.kind === 'saving' ? Math.min(100, Math.round(saving * 20)) : percent
+      }
+    }).filter(item => Number(item.value) > 0 || item.kind !== 'saving')
+  },
+
+  generateAdvice(records, totals, daysForAverage) {
+    if (records.length === 0) return ['还没有记录数据，可以先同步微信运动或记录一次外卖/通勤。']
 
     const advice = []
-    const maxCategory = Object.keys(totals).sort((a, b) => totals[b] - totals[a])[0]
-    if (maxCategory === 'transport') advice.push('交通碳排占比较高，可优先选择公共交通、骑行或步行。')
-    if (maxCategory === 'food') advice.push('饮食碳排占比较高，可增加本地食材和低碳餐食比例。')
-    if (maxCategory === 'electric') advice.push('用电碳排占比较高，记得关闭待机电器并合理设置空调温度。')
+    const emissionRecords = records.filter(item => Number(item.carbon || 0) > 0)
+    const maxItem = emissionRecords.sort((a, b) => Number(b.carbon || 0) - Number(a.carbon || 0))[0]
+    if (maxItem) {
+      const category = getCategory(maxItem.category)
+      advice.push(`${category.name}是近期较高的排放来源，可以优先从这里优化。`)
+    }
 
-    const avg = total / daysForAverage
-    advice.push(avg > 8 ? '日均碳排偏高，可以先从一次短途出行或一餐低碳饮食开始调整。' : '碳排控制不错，继续保持稳定记录。')
-    advice.push('每少排放 1kg CO₂，都是一次看得见的低碳行动。')
+    if (records.some(item => item.category === 'takeout')) {
+      advice.push('外卖记录已纳入统计，后续可通过少用一次性餐具、到店自取降低包装和配送排放。')
+    }
+    if (totals.saving > 0) {
+      advice.push(`低碳行为已累计减排 ${totals.saving.toFixed(2)}kg CO₂，继续同步步数会让排行更真实。`)
+    }
+
+    const avg = Math.max(0, totals.emission - totals.saving) / daysForAverage
+    advice.push(avg > 8 ? '净日均碳排偏高，建议先减少一次自驾、外卖或高碳购物。' : '净碳排控制不错，继续保持稳定记录。')
     return advice
   }
 })

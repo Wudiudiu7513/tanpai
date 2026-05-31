@@ -43,6 +43,11 @@
       }
     ]
   },
+  "permission": {
+    "scope.werun": {
+      "desc": "用于同步微信运动步数并估算步行减排数据"
+    }
+  },
   "style": "v2",
   "sitemapLocation": "sitemap.json"
 }

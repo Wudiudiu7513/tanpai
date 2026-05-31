@@ -1,4 +1,5 @@
 const { cloudEnvId } = require('./config')
+const { getNetCarbon } = require('./utils/carbon')
 
 App({
   globalData: {
@@ -77,6 +78,6 @@ App({
 
   getLocalCarbonTotal() {
     const records = wx.getStorageSync('carbon_records') || []
-    return records.reduce((sum, item) => sum + Number(item.carbon || 0), 0)
+    return getNetCarbon(records)
   }
 })
