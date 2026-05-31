@@ -318,6 +318,30 @@ Page({
   },
 
   feedback() {
-    wx.showToast({ title: '感谢反馈' })
+    const email = '3371835294@qq.com'
+    const subject = '轻碳生活小程序反馈'
+    const body = [
+      `收件人：${email}`,
+      `主题：${subject}`,
+      '',
+      '反馈内容：',
+      '',
+      '联系方式（可选）：'
+    ].join('\n')
+
+    wx.showModal({
+      title: '发送邮件反馈',
+      content: `将复制反馈邮箱 ${email}，请前往 QQ 邮箱粘贴并发送反馈。`,
+      confirmText: '复制邮箱',
+      success: (res) => {
+        if (!res.confirm) return
+        wx.setClipboardData({
+          data: body,
+          success: () => {
+            wx.showToast({ title: '已复制反馈模板', icon: 'none' })
+          }
+        })
+      }
+    })
   }
 })
