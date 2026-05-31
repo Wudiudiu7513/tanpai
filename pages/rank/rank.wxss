@@ -1,0 +1,161 @@
+.rank-tabs, .time-tabs {
+  display: flex;
+  justify-content: space-around;
+}
+.rank-tab, .time-tab {
+  padding: 15rpx 30rpx;
+  border-radius: 30rpx;
+  font-size: 26rpx;
+  background: #f0f0f0;
+  color: #666;
+}
+.rank-tab.active, .time-tab.active {
+  background: #2ecc71;
+  color: #fff;
+}
+.my-rank-card {
+  background: linear-gradient(135deg, #2ecc71, #27ae60);
+  color: #fff;
+}
+.my-rank-row {
+  display: flex;
+  align-items: center;
+}
+.my-avatar, .rank-avatar {
+  width: 80rpx;
+  height: 80rpx;
+  border-radius: 50%;
+  overflow: hidden;
+  margin-right: 20rpx;
+  background: rgba(255,255,255,0.3);
+}
+.avatar-img {
+  width: 100%;
+  height: 100%;
+}
+.my-info {
+  flex: 1;
+}
+.my-name {
+  font-size: 32rpx;
+  font-weight: bold;
+  display: block;
+}
+.my-carbon {
+  font-size: 24rpx;
+  opacity: 0.9;
+}
+.my-rank-num {
+  text-align: center;
+}
+.rank-label {
+  font-size: 22rpx;
+  opacity: 0.8;
+  display: block;
+}
+.rank-number {
+  font-size: 56rpx;
+  font-weight: bold;
+}
+.subtitle {
+  font-size: 24rpx;
+  color: #999;
+  display: block;
+  margin-top: 6rpx;
+}
+.top3 {
+  display: flex;
+  justify-content: space-around;
+  align-items: flex-end;
+  margin: 40rpx 0;
+  padding: 0 20rpx;
+}
+.top-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.top-avatar-wrap {
+  position: relative;
+}
+.top-medal {
+  position: absolute;
+  top: -20rpx;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 36rpx;
+  z-index: 1;
+}
+.top-avatar {
+  width: 100rpx;
+  height: 100rpx;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 4rpx solid #ddd;
+  background: #f0f0f0;
+}
+.top-avatar.big {
+  width: 130rpx;
+  height: 130rpx;
+  border-color: #f1c40f;
+}
+.top-name {
+  font-size: 26rpx;
+  margin-top: 10rpx;
+  font-weight: bold;
+}
+.top-carbon {
+  font-size: 22rpx;
+  color: #2ecc71;
+  margin-top: 4rpx;
+}
+.first {
+  margin-bottom: 30rpx;
+}
+.rank-list {
+  margin-top: 20rpx;
+}
+.rank-item {
+  display: flex;
+  align-items: center;
+  padding: 20rpx 0;
+  border-bottom: 1rpx solid #f0f0f0;
+}
+.rank-index {
+  width: 60rpx;
+  text-align: center;
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #999;
+}
+.rank-info {
+  flex: 1;
+}
+.rank-name {
+  font-size: 28rpx;
+}
+.rank-carbon {
+  font-size: 28rpx;
+  color: #2ecc71;
+  font-weight: bold;
+}
+.empty {
+  text-align: center;
+  padding: 60rpx 0;
+}
+.empty-icon {
+  font-size: 80rpx;
+  display: block;
+}
+.empty-text {
+  font-size: 30rpx;
+  color: #999;
+  display: block;
+  margin-top: 15rpx;
+}
+.empty-sub {
+  font-size: 24rpx;
+  color: #ccc;
+  display: block;
+  margin-top: 8rpx;
+}

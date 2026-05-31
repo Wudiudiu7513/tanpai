@@ -1,0 +1,90 @@
+<view class="container">
+  <view class="card">
+    <view class="time-tabs">
+      <view class="time-tab {{timeRange === 'week' ? 'active' : ''}}" bindtap="switchTime" data-range="week">本周</view>
+      <view class="time-tab {{timeRange === 'month' ? 'active' : ''}}" bindtap="switchTime" data-range="month">本月</view>
+      <view class="time-tab {{timeRange === 'quarter' ? 'active' : ''}}" bindtap="switchTime" data-range="quarter">本季</view>
+    </view>
+  </view>
+
+  <view class="card">
+    <text class="title">碳排总览</text>
+    <view class="overview-row">
+      <view class="overview-item">
+        <text class="overview-num">{{totalCarbon}}</text>
+        <text class="overview-label">总排放 (kg)</text>
+      </view>
+      <view class="overview-item">
+        <text class="overview-num">{{avgCarbon}}</text>
+        <text class="overview-label">日均 (kg)</text>
+      </view>
+      <view class="overview-item">
+        <text class="overview-num">{{recordDays}}</text>
+        <text class="overview-label">记录天数</text>
+      </view>
+    </view>
+  </view>
+
+  <view class="card equal-card">
+    <text class="title">碳排等价</text>
+    <view class="equal-list">
+      <view class="equal-item">
+        <text class="equal-icon">🌳</text>
+        <text class="equal-text">约需 {{treeAbsorb}} 棵树吸收一天</text>
+      </view>
+      <view class="equal-item">
+        <text class="equal-icon">💡</text>
+        <text class="equal-text">相当于点亮 {{lightHours}} 小时电灯</text>
+      </view>
+      <view class="equal-item">
+        <text class="equal-icon">🚗</text>
+        <text class="equal-text">相当于开车 {{drivingKm}} 公里</text>
+      </view>
+    </view>
+  </view>
+
+  <view class="card">
+    <text class="title">碳排趋势</text>
+    <view class="chart-area">
+      <view class="chart-bars">
+        <view class="chart-col" wx:for="{{chartData}}" wx:key="date">
+          <view class="chart-bar-wrap">
+            <text class="chart-value">{{item.value}}</text>
+            <view class="chart-bar" style="height:{{item.height}}rpx;background:{{item.color}};"></view>
+          </view>
+          <text class="chart-label">{{item.label}}</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <view class="card">
+    <text class="title">分类占比</text>
+    <view class="category-bars">
+      <view class="cate-row">
+        <text class="cate-label">🚗 交通</text>
+        <view class="cate-bar-bg"><view class="cate-bar" style="width:{{transportPercent}}%;background:#3498db;"></view></view>
+        <text class="cate-percent">{{transportPercent}}%</text>
+      </view>
+      <view class="cate-row">
+        <text class="cate-label">🍽️ 饮食</text>
+        <view class="cate-bar-bg"><view class="cate-bar" style="width:{{foodPercent}}%;background:#e67e22;"></view></view>
+        <text class="cate-percent">{{foodPercent}}%</text>
+      </view>
+      <view class="cate-row">
+        <text class="cate-label">💡 用电</text>
+        <view class="cate-bar-bg"><view class="cate-bar" style="width:{{electricPercent}}%;background:#f1c40f;"></view></view>
+        <text class="cate-percent">{{electricPercent}}%</text>
+      </view>
+    </view>
+  </view>
+
+  <view class="card advice-card">
+    <text class="title">智能减排建议</text>
+    <view class="advice-list">
+      <view class="advice-item" wx:for="{{adviceList}}" wx:key="index">
+        <text>{{item}}</text>
+      </view>
+    </view>
+  </view>
+</view>

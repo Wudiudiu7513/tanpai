@@ -1,0 +1,62 @@
+<view class="container">
+  <view class="card my-rank-card">
+    <view class="my-rank-row">
+      <view class="my-avatar">
+        <image src="{{myAvatar}}" mode="aspectFill" class="avatar-img"></image>
+      </view>
+      <view class="my-info">
+        <text class="my-name">{{myName}}</text>
+        <text class="my-carbon">{{myCarbon}} kg CO₂</text>
+      </view>
+      <view class="my-rank-num">
+        <text class="rank-label">我的排名</text>
+        <text class="rank-number">{{myRank}}</text>
+      </view>
+    </view>
+  </view>
+
+  <view class="card">
+    <text class="title">低碳英雄榜</text>
+    <text class="subtitle">碳排越低，排名越高</text>
+
+    <view class="top3" wx:if="{{rankList.length >= 3}}">
+      <view class="top-item second">
+        <text class="top-medal">🥈</text>
+        <view class="top-avatar"><image src="{{rankList[1].avatar}}" mode="aspectFill" class="avatar-img"></image></view>
+        <text class="top-name">{{rankList[1].name}}</text>
+        <text class="top-carbon">{{rankList[1].carbon}} kg</text>
+      </view>
+      <view class="top-item first">
+        <text class="top-medal">🥇</text>
+        <view class="top-avatar big"><image src="{{rankList[0].avatar}}" mode="aspectFill" class="avatar-img"></image></view>
+        <text class="top-name">{{rankList[0].name}}</text>
+        <text class="top-carbon">{{rankList[0].carbon}} kg</text>
+      </view>
+      <view class="top-item third">
+        <text class="top-medal">🥉</text>
+        <view class="top-avatar"><image src="{{rankList[2].avatar}}" mode="aspectFill" class="avatar-img"></image></view>
+        <text class="top-name">{{rankList[2].name}}</text>
+        <text class="top-carbon">{{rankList[2].carbon}} kg</text>
+      </view>
+    </view>
+
+    <view class="rank-list">
+      <view class="rank-item {{item.isMe ? 'me' : ''}}" wx:for="{{rankList}}" wx:key="id">
+        <text class="rank-index">{{item.rank}}</text>
+        <view class="rank-avatar">
+          <image src="{{item.avatar}}" mode="aspectFill" class="avatar-img"></image>
+        </view>
+        <view class="rank-info">
+          <text class="rank-name">{{item.name}}</text>
+        </view>
+        <text class="rank-carbon">{{item.carbon}} kg</text>
+      </view>
+    </view>
+
+    <view class="empty" wx:if="{{rankList.length === 0}}">
+      <text class="empty-icon">🏆</text>
+      <text class="empty-text">暂无排行数据</text>
+      <text class="empty-sub">授权登录并记录数据后即可上榜</text>
+    </view>
+  </view>
+</view>

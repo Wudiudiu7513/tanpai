@@ -1,0 +1,111 @@
+<view class="container">
+  <view class="card user-card">
+    <view class="user-row">
+      <view class="user-avatar" bindtap="chooseAvatar">
+        <image src="{{avatar}}" mode="aspectFill" class="avatar-img"></image>
+        <text class="avatar-edit">📷</text>
+      </view>
+      <view class="user-info">
+        <button wx:if="{{!isLoggedIn}}" class="login-btn" bindtap="loginWithWechat">微信登录</button>
+        <input wx:else class="user-name-input" value="{{userName}}" placeholder="点击设置昵称" bindinput="onNameInput" bindblur="saveName" />
+        <text class="user-level">{{levelTitle}}</text>
+      </view>
+    </view>
+    <view class="level-progress">
+      <view class="level-bar-bg">
+        <view class="level-bar" style="width: {{levelProgress}}%;"></view>
+      </view>
+      <text class="level-text">距离下一等级还需累计 {{nextLevelNeed}} kg</text>
+    </view>
+  </view>
+
+  <view class="card">
+    <text class="title">我的数据</text>
+    <view class="data-grid">
+      <view class="data-item">
+        <text class="data-num">{{totalRecords}}</text>
+        <text class="data-label">总记录数</text>
+      </view>
+      <view class="data-item">
+        <text class="data-num">{{totalDays}}</text>
+        <text class="data-label">记录天数</text>
+      </view>
+      <view class="data-item">
+        <text class="data-num">{{totalCarbon}}</text>
+        <text class="data-label">总碳排 (kg)</text>
+      </view>
+      <view class="data-item">
+        <text class="data-num">{{streakDays}}</text>
+        <text class="data-label">连续打卡</text>
+      </view>
+    </view>
+  </view>
+
+  <view class="card tree-card">
+    <text class="title">我的低碳树</text>
+    <view class="tree-area">
+      <text class="tree-emoji">{{treeEmoji}}</text>
+      <text class="tree-status">{{treeStatus}}</text>
+    </view>
+    <view class="tree-info">
+      <text class="tree-text">估算节碳: {{savedCarbon}} kg</text>
+      <text class="tree-text">树木等级: {{treeLevel}}</text>
+    </view>
+  </view>
+
+  <view class="card">
+    <text class="title">成就徽章</text>
+    <view class="badge-grid">
+      <view class="badge-item {{item.unlocked ? '' : 'locked'}}" wx:for="{{badges}}" wx:key="id">
+        <text class="badge-icon">{{item.icon}}</text>
+        <text class="badge-name">{{item.name}}</text>
+        <text class="badge-desc">{{item.desc}}</text>
+      </view>
+    </view>
+  </view>
+
+  <view class="card">
+    <text class="title">打卡日历</text>
+    <view class="calendar-header">
+      <text bindtap="prevMonth">‹</text>
+      <text class="calendar-title">{{calendarYear}} 年 {{calendarMonth}} 月</text>
+      <text bindtap="nextMonth">›</text>
+    </view>
+    <view class="calendar-weekdays">
+      <text wx:for="{{['日','一','二','三','四','五','六']}}" wx:key="*this">{{item}}</text>
+    </view>
+    <view class="calendar-days">
+      <view class="calendar-day {{item.checked ? 'checked' : ''}} {{item.isToday ? 'today' : ''}} {{item.empty ? 'empty' : ''}}" wx:for="{{calendarDays}}" wx:key="index">
+        <text>{{item.day}}</text>
+        <view class="check-dot" wx:if="{{item.checked}}"></view>
+      </view>
+    </view>
+  </view>
+
+  <view class="card">
+    <text class="title">每日碳排目标</text>
+    <view class="goal-setting">
+      <slider min="1" max="20" step="0.5" value="{{dailyGoal}}" activeColor="#2ecc71" bindchange="onGoalChange" show-value />
+      <text class="goal-text">每日目标: {{dailyGoal}} kg CO₂</text>
+    </view>
+  </view>
+
+  <view class="card">
+    <view class="menu-item" bindtap="exportData">
+      <text>导出数据</text>
+      <text class="menu-arrow">›</text>
+    </view>
+    <view class="menu-item" bindtap="clearData">
+      <text>清除数据</text>
+      <text class="menu-arrow">›</text>
+    </view>
+    <view class="menu-item" bindtap="showAbout">
+      <text>关于轻碳生活</text>
+      <text class="menu-arrow">›</text>
+    </view>
+    <view class="menu-item" bindtap="feedback">
+      <text>意见反馈</text>
+      <text class="menu-arrow">›</text>
+    </view>
+  </view>
+</view>

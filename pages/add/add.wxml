@@ -1,0 +1,40 @@
+<view class="container">
+  <view class="card">
+    <text class="title">记录本次碳排</text>
+
+    <view class="cate-group">
+      <text class="label">选择分类</text>
+      <view class="cate-list">
+        <view class="cate-item {{cate === 'transport' ? 'active' : ''}}" bindtap="setCate" data-cate="transport">
+          <text class="icon">🚗</text>
+          <text>交通</text>
+        </view>
+        <view class="cate-item {{cate === 'food' ? 'active' : ''}}" bindtap="setCate" data-cate="food">
+          <text class="icon">🍽️</text>
+          <text>饮食</text>
+        </view>
+        <view class="cate-item {{cate === 'electric' ? 'active' : ''}}" bindtap="setCate" data-cate="electric">
+          <text class="icon">💡</text>
+          <text>用电</text>
+        </view>
+      </view>
+    </view>
+
+    <view class="input-group">
+      <text class="label">碳排放量 (kg CO₂)</text>
+      <input class="input" type="digit" placeholder="请输入估算值" value="{{carbon}}" bindinput="setCarbon" />
+      <text class="tip">可直接填写估算值，也可使用下方快捷项。</text>
+    </view>
+
+    <view class="quick-group">
+      <text class="label">快捷填写</text>
+      <view class="quick-list">
+        <view class="quick-item" bindtap="quick" data-val="2">开车 10km ≈ 2kg</view>
+        <view class="quick-item" bindtap="quick" data-val="1">用电 5 小时 ≈ 1kg</view>
+        <view class="quick-item" bindtap="quick" data-val="3">高碳餐食 ≈ 3kg</view>
+      </view>
+    </view>
+
+    <button class="save-btn" bindtap="saveRecord" type="primary" disabled="{{!canSave}}">保存记录</button>
+  </view>
+</view>
