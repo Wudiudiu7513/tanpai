@@ -51,18 +51,29 @@ Page({
   },
 
   loginWithWechat() {
-    wx.getUserProfile({
-      desc: '用于展示昵称头像、同步碳排数据和参与排行榜',
-      success: (res) => {
-        app.saveUserProfile(res.userInfo).then(() => {
-          this.loadUserInfo()
-          wx.showToast({ title: '登录成功' })
-        })
-      },
-      fail: () => {
-        wx.showToast({ title: '已取消授权', icon: 'none' })
-      }
-    })
+    wx.showLoading({ title: '登录中...' })
+    app.loginSilently()
+      .then(() => {
+        const info = wx.getStorageSync('user_info') || {}
+        const nextInfo = {
+          name: info.name || info.nickName || '微信用户',
+          avatar: info.avatar || info.avatarUrl || '/images/mine.png',
+          nickName: info.nickName || info.name || '微信用户',
+          avatarUrl: info.avatarUrl || info.avatar || '/images/mine.png'
+        }
+        wx.setStorageSync('user_info', nextInfo)
+        return app.syncUserData({ userInfo: nextInfo })
+      })
+      .then(() => {
+        wx.hideLoading()
+        this.loadUserInfo()
+        wx.showToast({ title: '登录成功' })
+      })
+      .catch((err) => {
+        wx.hideLoading()
+        console.error('登录失败：', err)
+        wx.showToast({ title: '登录失败，请检查云函数', icon: 'none' })
+      })
   },
 
   onNameInput(e) {
@@ -76,19 +87,13 @@ Page({
     app.syncUserData({ userInfo: nextInfo })
   },
 
-  chooseAvatar() {
-    wx.chooseMedia({
-      count: 1,
-      mediaType: ['image'],
-      success: (res) => {
-        const path = res.tempFiles[0].tempFilePath
-        const info = wx.getStorageSync('user_info') || {}
-        const nextInfo = { ...info, avatar: path, avatarUrl: path }
-        wx.setStorageSync('user_info', nextInfo)
-        this.setData({ avatar: path })
-        app.syncUserData({ userInfo: nextInfo })
-      }
-    })
+  onChooseAvatar(e) {
+    const path = e.detail.avatarUrl
+    const info = wx.getStorageSync('user_info') || {}
+    const nextInfo = { ...info, avatar: path, avatarUrl: path }
+    wx.setStorageSync('user_info', nextInfo)
+    this.setData({ avatar: path })
+    app.syncUserData({ userInfo: nextInfo })
   },
 
   loadStats() {

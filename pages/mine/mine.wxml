@@ -1,13 +1,16 @@
 <view class="container">
   <view class="card user-card">
     <view class="user-row">
-      <view class="user-avatar" bindtap="chooseAvatar">
+      <button wx:if="{{isLoggedIn}}" class="user-avatar avatar-button" open-type="chooseAvatar" bindchooseavatar="onChooseAvatar">
         <image src="{{avatar}}" mode="aspectFill" class="avatar-img"></image>
         <text class="avatar-edit">📷</text>
+      </button>
+      <view wx:else class="user-avatar">
+        <image src="{{avatar}}" mode="aspectFill" class="avatar-img"></image>
       </view>
       <view class="user-info">
         <button wx:if="{{!isLoggedIn}}" class="login-btn" bindtap="loginWithWechat">微信登录</button>
-        <input wx:else class="user-name-input" value="{{userName}}" placeholder="点击设置昵称" bindinput="onNameInput" bindblur="saveName" />
+        <input wx:else class="user-name-input" type="nickname" value="{{userName}}" placeholder="点击设置昵称" bindinput="onNameInput" bindblur="saveName" />
         <text class="user-level">{{levelTitle}}</text>
       </view>
     </view>
