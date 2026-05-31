@@ -9,6 +9,9 @@ Page({
     carbon: '',
     savedCarbon: '',
     remark: '',
+    ocrLoading: false,
+    ocrText: '',
+    ocrReasons: [],
     canSave: false,
     currentCategory: getCategory('transport')
   },
@@ -19,6 +22,8 @@ Page({
       cate,
       carbon: '',
       savedCarbon: '',
+      ocrText: '',
+      ocrReasons: [],
       currentCategory: getCategory(cate)
     })
     this.checkCanSave()
@@ -36,6 +41,58 @@ Page({
 
   setRemark(e) {
     this.setData({ remark: e.detail.value })
+  },
+
+  recognizeTakeoutScreenshot() {
+    if (this.data.cate !== 'takeout') {
+      this.setData({
+        cate: 'takeout',
+        currentCategory: getCategory('takeout'),
+        carbon: '',
+        savedCarbon: ''
+      })
+    }
+
+    wx.chooseMedia({
+      count: 1,
+      mediaType: ['image'],
+      sourceType: ['album', 'camera'],
+      success: (res) => {
+        const filePath = res.tempFiles[0].tempFilePath
+        const extMatch = filePath.match(/\.[a-zA-Z0-9]+$/)
+        const ext = extMatch ? extMatch[0] : '.jpg'
+        const cloudPath = `takeout-ocr/${Date.now()}${ext}`
+        this.setData({ ocrLoading: true, ocrText: '', ocrReasons: [] })
+
+        wx.cloud.uploadFile({
+          cloudPath,
+          filePath
+        }).then((uploadRes) => wx.cloud.callFunction({
+          name: 'ocrTakeout',
+          data: { fileID: uploadRes.fileID }
+        })).then(({ result }) => {
+          if (!result || !result.success) {
+            throw new Error(result && result.msg ? result.msg : 'ocr-failed')
+          }
+          const estimate = result.estimate || {}
+          this.setData({
+            cate: 'takeout',
+            currentCategory: getCategory('takeout'),
+            carbon: String(estimate.carbon || ''),
+            remark: estimate.remark || '截图识别外卖',
+            ocrText: result.text || '',
+            ocrReasons: estimate.reasons || [],
+            ocrLoading: false
+          })
+          this.checkCanSave()
+          wx.showToast({ title: '识别完成' })
+        }).catch((err) => {
+          console.error('外卖截图识别失败：', err)
+          this.setData({ ocrLoading: false })
+          wx.showToast({ title: '识别失败，请手动输入', icon: 'none' })
+        })
+      }
+    })
   },
 
   quick(e) {

@@ -53,6 +53,8 @@
 
 外卖暂不支持自动读取美团/饿了么订单，因为微信小程序没有权限直接读取其他 App 数据。目前已提供“外卖”分类和快捷估算项，后续可以继续接入“订单截图 OCR 识别”。
 
+外卖截图识别已接入记录页：选择“外卖”分类后，可以上传订单截图，小程序会调用 `ocrTakeout` 云函数进行 OCR，并根据餐品关键词、餐具/包装信息、配送距离智能估算碳排值。识别失败时仍可手动输入估算值。
+
 ## 云开发配置
 
 当前云环境 ID 配置在 `config.js`：
@@ -68,12 +70,14 @@ module.exports = {
 - `cloudfunctions/login`
 - `cloudfunctions/updateRank`
 - `cloudfunctions/syncWeRun`
+- `cloudfunctions/ocrTakeout`
 
 云函数部署状态：
 
 - `login` 已成功部署。
 - `updateRank` 已成功部署。
 - `syncWeRun` 需要新增部署。
+- `ocrTakeout` 需要部署，并需要云调用 OCR 权限 `ocr.printedText`。
 
 云数据库集合：
 
@@ -133,6 +137,16 @@ git push
 "D:\学习\微信web开发者工具0\微信web开发者工具\cli.bat" cloud functions deploy ^
   --env cloud1-3gsmum3l9da9566a ^
   --paths "C:\Users\33718\Desktop\碳排\cloudfunctions\syncWeRun" ^
+  --remote-npm-install ^
+  --appid wx4cfcf3ee52983c32
+```
+
+外卖截图 OCR 云函数部署：
+
+```bash
+"D:\学习\微信web开发者工具0\微信web开发者工具\cli.bat" cloud functions deploy ^
+  --env cloud1-3gsmum3l9da9566a ^
+  --paths "C:\Users\33718\Desktop\碳排\cloudfunctions\ocrTakeout" ^
   --remote-npm-install ^
   --appid wx4cfcf3ee52983c32
 ```

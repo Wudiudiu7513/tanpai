@@ -18,7 +18,21 @@
       <text class="tip">外卖、购物、居家等分类可先用估算值记录，后续可接入截图识别。</text>
     </view>
 
-    <view class="input-group" wx:else>
+    <view class="ocr-box" wx:if="{{cate === 'takeout'}}">
+      <button class="ocr-btn" loading="{{ocrLoading}}" bindtap="recognizeTakeoutScreenshot">
+        {{ocrLoading ? '正在识别...' : '上传外卖截图识别'}}
+      </button>
+      <view class="ocr-result" wx:if="{{ocrReasons.length > 0}}">
+        <text class="ocr-title">智能估算依据</text>
+        <text class="ocr-line" wx:for="{{ocrReasons}}" wx:key="index">{{item}}</text>
+      </view>
+      <view class="ocr-text" wx:if="{{ocrText}}">
+        <text class="ocr-title">识别到的文字</text>
+        <text>{{ocrText}}</text>
+      </view>
+    </view>
+
+    <view class="input-group" wx:if="{{currentCategory.kind === 'saving'}}">
       <text class="label">减排量 (kg CO₂)</text>
       <input class="input" type="digit" placeholder="请输入本次低碳行为减排量" value="{{savedCarbon}}" bindinput="setSavedCarbon" />
       <text class="tip">步行、骑行、自带杯、旧物回收等行为会计入累计减排。</text>

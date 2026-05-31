@@ -60,6 +60,43 @@
   display: block;
   line-height: 1.5;
 }
+.ocr-box {
+  margin: -8rpx 0 28rpx;
+  padding: 22rpx;
+  background: #f8fbf9;
+  border-radius: 16rpx;
+  border: 1rpx solid #e6f3ec;
+}
+.ocr-btn {
+  background: #16a085;
+  color: #fff;
+  border-radius: 14rpx;
+  font-size: 28rpx;
+}
+.ocr-result {
+  margin-top: 18rpx;
+}
+.ocr-title {
+  display: block;
+  font-size: 24rpx;
+  font-weight: bold;
+  color: #2c3e50;
+  margin-bottom: 8rpx;
+}
+.ocr-line {
+  display: block;
+  font-size: 23rpx;
+  color: #607d6f;
+  line-height: 1.6;
+}
+.ocr-text {
+  margin-top: 16rpx;
+  max-height: 180rpx;
+  overflow: auto;
+  font-size: 22rpx;
+  color: #8a8f94;
+  line-height: 1.5;
+}
 .quick-group {
   margin-bottom: 40rpx;
 }
